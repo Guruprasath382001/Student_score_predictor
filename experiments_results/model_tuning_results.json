@@ -1,0 +1,70 @@
+{
+    "created_at": "2026-10-05T17:44:17.992332",
+    "dataset": "D:\\codoid_may_6_2026\\guru\\guru_studies\\AI\\Machine Learning\\Student_Score_Final\\data\\StudentPerformanceFactors.csv",
+    "target": "Exam_Score",
+    "cross_validation_folds": 5,
+    "random_state": 42,
+    "selection_metric": "RMSE",
+    "selection_rule": "Lowest cross-validation RMSE",
+    "selected_model": "Ridge Regression",
+    "selected_cv_rmse": 2.052374637124293,
+    "selected_parameters": {
+        "model__alpha": 10
+    },
+    "models": [
+        {
+            "model": "Linear Regression",
+            "cv_rmse": 2.052512485860656,
+            "cv_metrics": {
+                "rmse": 2.052512485860656,
+                "mae": 0.5071471541182363,
+                "mse": 4.404072163726541,
+                "r2": 0.7231933407844309
+            },
+            "best_parameters": {}
+        },
+        {
+            "model": "Ridge Regression",
+            "cv_rmse": 2.052374637124293,
+            "cv_metrics": {
+                "rmse": 2.052374637124293,
+                "mae": 0.5070104864057177,
+                "mse": 4.403699148555037,
+                "r2": 0.7232285022708991
+            },
+            "best_parameters": {
+                "model__alpha": 10
+            }
+        },
+        {
+            "model": "Random Forest",
+            "cv_rmse": 2.3807782420602486,
+            "cv_metrics": {
+                "rmse": 2.3807782420602486,
+                "mae": 1.1548122403679046,
+                "mse": 5.8152837039082,
+                "r2": 0.630192469848122
+            },
+            "best_parameters": {
+                "model__max_depth": null,
+                "model__min_samples_split": 5,
+                "model__n_estimators": 200
+            }
+        },
+        {
+            "model": "Gradient Boosting",
+            "cv_rmse": 2.135581441355996,
+            "cv_metrics": {
+                "rmse": 2.135581441355996,
+                "mae": 0.7327401660963416,
+                "mse": 4.734828502342327,
+                "r2": 0.7012402263998464
+            },
+            "best_parameters": {
+                "model__learning_rate": 0.1,
+                "model__max_depth": 2,
+                "model__n_estimators": 200
+            }
+        }
+    ]
+}

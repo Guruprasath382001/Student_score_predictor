@@ -1,0 +1,48 @@
+[
+    {
+        "Model": "Linear Regression",
+        "CV_RMSE": 2.052512485860656,
+        "Test_MSE": 3.256019987042895,
+        "Test_RMSE": 1.8044445092722843,
+        "Test_MAE": 0.4523920089625993,
+        "Test_R2": 0.7696495724907311,
+        "Best_Parameters": {}
+    },
+    {
+        "Model": "Ridge",
+        "CV_RMSE": 2.052374637124293,
+        "Test_MSE": 3.254923566809973,
+        "Test_RMSE": 1.804140672677708,
+        "Test_MAE": 0.4523708838467282,
+        "Test_R2": 0.769727139849159,
+        "Best_Parameters": {
+            "model__alpha": 10
+        }
+    },
+    {
+        "Model": "Random Forest",
+        "CV_RMSE": 2.3807782420602486,
+        "Test_MSE": 4.577868206140918,
+        "Test_RMSE": 2.139595337006724,
+        "Test_MAE": 1.0717501665211568,
+        "Test_R2": 0.6761340831561184,
+        "Best_Parameters": {
+            "model__max_depth": null,
+            "model__min_samples_split": 5,
+            "model__n_estimators": 200
+        }
+    },
+    {
+        "Model": "Gradient Boosting",
+        "CV_RMSE": 2.135581441355996,
+        "Test_MSE": 3.541039455316043,
+        "Test_RMSE": 1.8817649840817112,
+        "Test_MAE": 0.6830582390567745,
+        "Test_R2": 0.7494855819051539,
+        "Best_Parameters": {
+            "model__learning_rate": 0.1,
+            "model__max_depth": 2,
+            "model__n_estimators": 200
+        }
+    }
+]

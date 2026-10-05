@@ -1,0 +1,79 @@
+{
+    "model_name": "Ridge Regression",
+    "model_type": "regression",
+    "target": "Exam_Score",
+    "features": [
+        "Hours_Studied",
+        "Attendance",
+        "Sleep_Hours",
+        "Previous_Scores",
+        "Tutoring_Sessions",
+        "Physical_Activity",
+        "Parental_Involvement",
+        "Access_to_Resources",
+        "Extracurricular_Activities",
+        "Motivation_Level",
+        "Internet_Access",
+        "Family_Income",
+        "Teacher_Quality",
+        "School_Type",
+        "Peer_Influence",
+        "Learning_Disabilities",
+        "Parental_Education_Level",
+        "Distance_from_Home",
+        "Gender"
+    ],
+    "numeric_features": [
+        "Hours_Studied",
+        "Attendance",
+        "Sleep_Hours",
+        "Previous_Scores",
+        "Tutoring_Sessions",
+        "Physical_Activity"
+    ],
+    "categorical_features": [
+        "Parental_Involvement",
+        "Access_to_Resources",
+        "Extracurricular_Activities",
+        "Motivation_Level",
+        "Internet_Access",
+        "Family_Income",
+        "Teacher_Quality",
+        "School_Type",
+        "Peer_Influence",
+        "Learning_Disabilities",
+        "Parental_Education_Level",
+        "Distance_from_Home",
+        "Gender"
+    ],
+    "hyperparameters": {
+        "model__alpha": 10
+    },
+    "training": {
+        "dataset_rows": 6607,
+        "development_rows": 5285,
+        "test_rows": 1322,
+        "test_size": 0.2,
+        "random_state": 42,
+        "cross_validation_folds": 5
+    },
+    "metrics": {
+        "cv_rmse": 2.052374637124293,
+        "test_mse": 3.254923566809973,
+        "test_rmse": 1.804140672677708,
+        "test_mae": 0.4523708838467282,
+        "test_r2": 0.769727139849159
+    },
+    "preprocessing": {
+        "numeric_missing_values": "median",
+        "numeric_scaling": "StandardScaler",
+        "categorical_missing_values": "most_frequent",
+        "categorical_encoding": "OneHotEncoder",
+        "unknown_categories": "ignore"
+    },
+    "environment": {
+        "python_version": "3.11.9",
+        "scikit_learn_version": "1.9.1"
+    },
+    "created_at": "2026-10-05T17:44:53.314167"
+}

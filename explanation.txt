@@ -1,0 +1,537 @@
+# STUDENT SCORE PREDICTION - PROJECT WORKFLOW
+
+
+## tune_models.py
+
+```
+Responsible for model comparison, hyperparameter tuning, and model selection.
+
+It trains and tunes all candidate machine learning models using the development/training data.
+
+Models currently compared:
+    - Linear Regression
+    - Ridge Regression
+    - Random Forest Regressor
+    - Gradient Boosting Regressor
+
+GridSearchCV is used to find the best hyperparameters for each model.
+
+5-Fold Cross Validation is used to evaluate the models.
+
+Cross-validation metrics calculated:
+    - RMSE
+    - MAE
+    - MSE
+    - R²
+
+The main model-selection metric is Cross-Validation RMSE.
+
+The model with the LOWEST Cross-Validation RMSE is selected as the best model.
+
+Example:
+
+    Linear Regression     CV RMSE = 2.052512
+    Ridge Regression      CV RMSE = 2.052375  <-- Selected
+    Gradient Boosting     CV RMSE = 2.135581
+    Random Forest         CV RMSE = 2.380778
+
+In this case, Ridge Regression is selected because it has the lowest
+Cross-Validation RMSE.
+
+The selected model, best hyperparameters, CV metrics, and results of all
+tested models are saved in:
+
+    experiments_results/model_tuning_results.json
+
+IMPORTANT:
+    The test data is NOT used for model selection or hyperparameter tuning.
+
+    Model selection is performed only using Cross Validation on the
+    development/training data.
+```
+
+
+## train.py
+
+```
+Responsible for training the final production model.
+
+It reads the best model information from:
+
+    experiments_results/model_tuning_results.json
+
+From this file, it gets:
+
+    - Selected model
+    - Best hyperparameters
+
+Example:
+
+    Selected Model:
+        Ridge Regression
+
+    Best Parameters:
+        alpha = 10
+
+train.py then creates the selected model using those hyperparameters.
+
+The selected model is trained using the full development/training dataset.
+
+After training is completed, the untouched test dataset is used for the
+FINAL evaluation.
+
+Final test metrics calculated:
+
+    - MSE
+    - RMSE
+    - MAE
+    - R²
+
+The trained pipeline is saved as:
+
+    models/student_score_pipeline.pkl
+
+Model metadata and final evaluation results are saved as:
+
+    models/metadata.json
+
+IMPORTANT:
+    train.py does NOT decide which algorithm is best.
+
+    tune_models.py is responsible for model selection.
+
+    train.py simply reads the selected model and parameters and trains
+    that model.
+```
+
+
+## outlier_analysis.py
+
+```
+Responsible for analyzing unusual values and outliers in the dataset.
+
+It helps identify extreme values that may negatively affect model
+training or prediction performance.
+
+The analysis can be performed on numerical features such as:
+
+    - Hours_Studied
+    - Attendance
+    - Sleep_Hours
+    - Previous_Scores
+    - Tutoring_Sessions
+    - Physical_Activity
+    - Exam_Score
+
+
+The purpose of this file is ANALYSIS.
+
+It should help answer questions such as:
+
+    - Which columns contain outliers?
+    - How many outliers exist?
+    - Are the outliers realistic values?
+    - Are extreme Exam_Score values causing large prediction errors?
+    - Should an outlier be retained, capped, transformed, or removed?
+
+IMPORTANT:
+    Outliers should NOT be removed automatically just because they are
+    statistically unusual.
+
+    First determine whether the value is:
+        1. A genuine/valid extreme value
+        2. A data-entry error
+        3. An impossible value
+
+    Valid extreme values should generally be retained unless there is a
+    strong reason to remove them.
+
+
+It loads the trained production model and compares:
+
+    Actual Exam Score
+            vs
+    Predicted Exam Score
+
+Absolute Error is calculated as:
+
+    Absolute Error = |Actual Score - Predicted Score|
+
+It helps identify:
+
+    - Predictions with very small errors
+    - Predictions with large errors
+    - Worst prediction cases
+    - Patterns where the model performs poorly
+
+Example:
+
+    Actual      Predicted      Absolute Error
+
+    70          69.5           0.5
+    75          74.2           0.8
+    98          70.9           27.1
+
+Large-error samples should be investigated to determine whether the
+problem comes from:
+
+    - Outliers
+    - Missing predictive features
+    - Dataset limitations
+    - Model limitations
+    - Incorrect or noisy data
+
+This file is mainly used for model diagnosis and understanding model
+weaknesses.
+```
+
+
+## error_analysis.py
+
+```
+Responsible for analyzing the prediction errors of the trained model.
+
+It calculates the error between:
+    Actual Exam Score
+    vs
+    Predicted Exam Score
+
+Instead of looking at individual errors only, it GROUPS the errors into
+different error ranges and provides dashboard-like insights directly
+in the terminal.
+
+Example error groups:
+
+    Error <= 1
+    Error <= 2
+    Error <= 3
+    Error > 3
+    Error > 5
+    Error > 10
+    Error > 20
+
+The terminal output provides insights such as:
+    - Total number of predictions
+    - Mean Absolute Error
+    - Maximum prediction error
+    - Number of predictions in each error range
+    - Percentage of predictions in each error range
+    - Number of highly inaccurate predictions
+    - Actual vs predicted values for the largest errors
+
+This makes it easier to understand the model's practical prediction
+performance instead of relying only on overall metrics such as RMSE,
+MAE, MSE, and R².
+
+Example:
+
+    ERROR ANALYSIS DASHBOARD
+
+    Total Predictions       : 1322
+    MAE                     : 0.45
+    Maximum Error           : 27.99
+
+    Error Distribution
+    -------------------------------
+    Error <= 1              : 1304 (98.64%)
+    Error <= 2              : 1315 (99.47%)
+    Error <= 3              : 1315 (99.47%)
+    Error > 3               : 7    (0.53%)
+    Error > 5               : 7    (0.53%)
+
+    High Error Predictions
+    -------------------------------
+    Actual    Predicted    Error
+    89.00     61.01        27.99
+    98.00     70.90        27.10
+    87.00     60.13        26.87
+
+Purpose:
+    Provides a dashboard-like terminal summary of WHERE the model makes
+    mistakes and HOW large those mistakes are.
+
+    Overall metrics tell us how the model performs on average.
+
+    error_analysis.py tells us how the prediction errors are distributed
+    across the test dataset and helps identify unusual/high-error cases.
+```
+
+
+## model_comparison.py
+
+```
+Responsible for comparing the performance of different machine learning
+algorithms after hyperparameter tuning.
+
+It compares models using their evaluation metrics and provides a clear
+comparison of how each algorithm performs.
+
+Models compared include:
+    - Linear Regression
+    - Ridge Regression
+    - Random Forest
+    - Gradient Boosting
+
+The comparison includes metrics such as:
+    - Cross-Validation RMSE
+    - Test RMSE
+    - Test MAE
+    - Test MSE
+    - Test R²
+
+The results are displayed in a comparison table in the terminal so that
+we can easily understand which models perform better.
+
+Example:
+
+    MODEL COMPARISON
+
+    Model                  CV RMSE    Test RMSE    Test MAE    Test R²
+    --------------------------------------------------------------------
+    Ridge Regression        2.0524       1.8041      0.4524      0.7697
+    Linear Regression        2.0525       1.8043      0.4530      0.7696
+    Gradient Boosting        2.1356       1.8818      0.6831      0.7495
+    Random Forest            2.3808       2.1396      1.0718      0.6761
+
+IMPORTANT:
+
+    model_comparison.py is mainly for analyzing and presenting model
+    performance.
+
+    The actual model selection is handled by tune_models.py.
+
+    tune_models.py:
+        Decides which model is best using the lowest Cross-Validation RMSE.
+
+    model_comparison.py:
+        Helps us visually compare the performance of all models and
+        understand the strengths and weaknesses of each algorithm.
+
+Purpose:
+
+    Provides an easy-to-read performance comparison between different
+    algorithms and helps us understand why the selected model performs
+    better than the alternatives.
+```
+
+
+
+
+
+## predict.py
+
+```
+Responsible for making predictions using the final trained model.
+
+It loads:
+
+    models/student_score_pipeline.pkl
+
+User/student input is passed to the complete pipeline.
+
+The pipeline automatically performs:
+
+    Missing Value Handling
+            ↓
+    Numerical Scaling
+            ↓
+    Categorical Encoding
+            ↓
+    Model Prediction
+
+predict.py also validates important input values before prediction.
+
+Example:
+
+    Attendance must be between 0 and 100.
+
+    Previous_Scores must be between 0 and 100.
+
+    Hours_Studied cannot be negative.
+
+Finally, it returns the predicted Exam Score.
+```
+
+## preprocessing.py
+
+```
+Responsible for defining the preprocessing pipeline used by the models.
+
+Numerical Features:
+
+    Missing values
+        ↓
+    Median Imputation
+        ↓
+    StandardScaler
+
+Categorical Features:
+
+    Missing values
+        ↓
+    Most Frequent Value Imputation
+        ↓
+    OneHotEncoder
+
+OneHotEncoder uses:
+
+    handle_unknown="ignore"
+
+Therefore, previously unseen categorical values during prediction will
+not crash the pipeline.
+
+The preprocessing logic is shared between model tuning and final training
+so that the same preprocessing is consistently applied.
+```
+
+## config.py
+
+```
+Contains common project configuration.
+
+Examples:
+
+    Dataset path
+    Model path
+    Metadata path
+    Target column
+    Numerical features
+    Categorical features
+    All input features
+    Test size
+    Random state
+    Number of Cross-Validation folds
+
+Keeping these values in one file prevents duplication and makes the
+project easier to maintain.
+```
+
+======================================================================
+COMPLETE MACHINE LEARNING WORKFLOW
+==================================
+
+```
+                StudentPerformanceFactors.csv
+                           |
+                           v
+                     Load Dataset
+                           |
+                           v
+                  Train / Test Split
+                           |
+             +-------------+-------------+
+             |                           |
+             v                           v
+     Development Data                Test Data
+             |                           |
+             |                     KEEP UNTOUCHED
+             v
+      tune_models.py
+             |
+             v
+   Preprocessing Pipeline
+             |
+             v
+      GridSearchCV
+      5-Fold CV
+             |
+             v
+ Compare Candidate Models
+             |
+             v
+Calculate CV Metrics
+RMSE / MAE / MSE / R²
+             |
+             v
+ Lowest CV RMSE Wins
+             |
+             v
+```
+
+experiments_results/
+model_tuning_results.json
+|
+v
+train.py
+|
+v
+Read Selected Model +
+Best Hyperparameters
+|
+v
+Train Selected Model
+on Full Development Data
+|
+v
+Final Test Evaluation
+|
+v
+MSE / RMSE / MAE / R²
+|
++------+------+
+|             |
+v             v
+student_score_     metadata.json
+pipeline.pkl
+|
+v
+predict.py
+|
+v
+New Student Data
+|
+v
+Predicted Exam Score
+
+======================================================================
+IMPORTANT PRINCIPLE
+===================
+
+```
+tune_models.py
+    = "Which model should I use?"
+
+train.py
+    = "Train the selected model and evaluate it on unseen test data."
+
+outlier_analysis.py
+    = "Are there unusual/extreme values in my dataset?"
+
+error_analysis.py
+    = "Where and why is my trained model making mistakes?"
+
+preprocessing.py
+    = "How should raw input data be prepared for the model?"
+
+predict.py
+    = "Use the final trained model to predict new student scores."
+
+config.py
+    = "Keep shared project settings and feature definitions in one place."
+```
+
+======================================================================
+WHY TEST DATA IS KEPT SEPARATE
+================================
+
+```
+The test dataset represents completely unseen data.
+
+If test data is repeatedly used to select algorithms or tune
+hyperparameters, information from the test set indirectly influences
+model development.
+
+Therefore:
+
+    Development Data
+        -> Model training
+        -> Cross Validation
+        -> Hyperparameter tuning
+        -> Model selection
+
+    Test Data
+        -> Final evaluation only
+
+This provides a more trustworthy estimate of how the final model may
+perform on new unseen data.
+```
