@@ -19,52 +19,78 @@ def read_root():
 
 @app.get("/choose_model/")
 def choose_model():
-    output = Tune_and_choose_right_model()
+    try:
+        output = Tune_and_choose_right_model()
 
-    return {
-        "message":"success",
-        "data":output
-    }
+        return {
+            "message":"success",
+            "data":output
+        }
+    except Exception as e:
+        return {
+            "message":str(e)
+        }
 
 
 @app.get("/train/")
 def Train():
-    output = Train_model()
+    try:
+        output = Train_model()
 
-    return {
-        "message":"success",
-        "data":output
-    }
+        return {
+            "message":"success",
+            "data":output
+        }
+    except Exception as e:
+            return {
+                "message":str(e)
+            }
 
 
 @app.post("/predict/")
 def Predict(data:dict):
-    output = predict_score(data)
+    try:
+        output = predict_score(data)
 
-    return {
-        "message":"success",
-        "data":output
-    }
+        return {
+            "message":"success",
+            "data":output
+        }
+    except Exception as e:
+            return {
+                "message":str(e)
+            }
 
 
 @app.get("/analysis/")
 def Analysis(type:str):
+    try:
 
-    if type=='outlier':
-        outlier_analysis()
-    elif type=='error':
-        error_analysis()
+        if type=='outlier':
+            outlier_analysis()
+        elif type=='error':
+            error_analysis()
 
-    return {
-        "message":"success",
-    }
-
+        return {
+            "message":"success",
+        }
+    
+    except Exception as e:
+            return {
+                "message":str(e)
+            }
 
 @app.get("/model_comparison/")
 def Model_comparison():
+    try:
 
-    model_comparison()
+        model_comparison()
 
-    return {
-        "message":"success",
-    }
+        return {
+            "message":"success",
+        }
+
+    except Exception as e:
+            return {
+                "message":str(e)
+            }
